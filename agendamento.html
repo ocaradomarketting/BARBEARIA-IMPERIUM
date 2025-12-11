@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Horário | Barbearia Imperium</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- ESTILOS GERAIS --- */
+        :root {
+            --color-gold: #D4CDC1;
+            --font-title: 'Playfair Display', serif;
+            --font-body: 'Montserrat', sans-serif;
+            --bg-dark: #111;
+            --bg-card: #1a1a1a;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-dark);
+            color: #f8f9fa;
+            overflow-x: hidden;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            background-color: rgba(17, 17, 17, 0.95) !important;
+            border-bottom: 1px solid rgba(212, 205, 193, 0.1);
+            padding: 15px 0;
+        }
+        .navbar-brand { font-family: var(--font-title); color: var(--color-gold); font-weight: 700; letter-spacing: 2px; font-size: 1.5rem; }
+        .nav-link { text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1.5px; color: rgba(255,255,255,0.7) !important; }
+        
+        /* --- HEADER --- */
+        .page-header {
+            padding: 120px 0 60px;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1503951914875-befca64f8900?q=80&w=2070');
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .display-4 { font-family: var(--font-title); color: var(--color-gold); }
+
+        /* --- FORMULÁRIOS --- */
+        .form-control, .form-select {
+            background-color: #222;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: #222;
+            color: #fff;
+            border-color: var(--color-gold);
+            box-shadow: 0 0 0 0.25rem rgba(212, 205, 193, 0.2);
+        }
+        label { color: var(--color-gold); margin-bottom: 8px; font-weight: 500; }
+
+        /* --- CALENDÁRIO --- */
+        .calendar-wrapper {
+            background-color: var(--bg-card);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid #333;
+        }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; }
+        .weekday { font-size: 0.8rem; color: #666; margin-bottom: 10px; }
+        .day { padding: 10px; border-radius: 50%; cursor: pointer; transition: 0.3s; font-weight: 500; }
+        .day:hover { background-color: #333; color: var(--color-gold); }
+        .day.active { background-color: var(--color-gold); color: #000; box-shadow: 0 0 15px rgba(212, 205, 193, 0.4); }
+        .day.disabled { color: #333; cursor: not-allowed; }
+
+        /* --- HORÁRIOS --- */
+        .time-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 20px; }
+        .time-btn { background-color: #222; border: 1px solid #444; color: #ccc; padding: 8px; border-radius: 8px; cursor: pointer; transition: 0.3s; text-align: center; font-size: 0.9rem; }
+        .time-btn.active { background-color: var(--color-gold); color: #000; border-color: var(--color-gold); }
+
+        /* --- BOTÃO CONFIRMAR --- */
+        .btn-confirmar {
+            width: 100%; padding: 15px; background-color: var(--color-gold); color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border: none; border-radius: 50px; margin-top: 30px; transition: 0.3s;
+        }
+        .btn-confirmar:hover { background-color: #fff; transform: translateY(-2px); box-shadow: 0 5px 20px rgba(212, 205, 193, 0.3); }
+        .btn-confirmar:disabled { background-color: #555; cursor: not-allowed; transform: none; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index8.html">IMPERIUM</a>
+            <div class="ms-auto">
+                <a href="index8.html" class="nav-link"><i class="bi bi-arrow-left"></i> Voltar</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="container">
+            <h1 class="display-4">Agendar Horário</h1>
+            <p class="text-secondary">Escolha o melhor momento para o seu estilo.</p>
+        </div>
+    </header>
+
+    <div class="container pb-5">
+        <div class="row g-5">
+            <div class="col-lg-5">
+                <h3 class="mb-4">1. Seus Dados</h3>
+                <form id="formAgendamento" onsubmit="return false;">
+                    <div class="mb-3">
+                        <label>Nome Completo</label>
+                        <input type="text" id="nome" class="form-control" placeholder="Digite seu nome">
+                    </div>
+                    <div class="mb-3">
+                        <label>Telefone / WhatsApp</label>
+                        <input type="tel" id="telefone" class="form-control" placeholder="(00) 00000-0000">
+                    </div>
+                    
+                    <h3 class="mt-5 mb-4">2. Serviço e Profissional</h3>
+                    <div class="mb-3">
+                        <label>Selecione a Unidade</label>
+                        <select id="unidade" class="form-select">
+                            <option selected value="Divinópolis">Unidade Divinópolis</option>
+                            <option value="Belo Horizonte">Unidade Belo Horizonte</option>
+                            <option value="São Paulo">Unidade São Paulo</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Selecione o Serviço</label>
+                        <select id="servico" class="form-select">
+                            <option selected value="Corte de Cabelo">Corte de Cabelo</option>
+                            <option value="Barba Completa">Barba Completa</option>
+                            <option value="Corte + Barba">Corte + Barba (Combo)</option>
+                            <option value="Camuflagem">Camuflagem</option>
+                            <option value="Dia do Noivo">Dia do Noivo</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Profissional (Opcional)</label>
+                        <select id="profissional" class="form-select">
+                            <option selected value="Qualquer">Qualquer profissional disponível</option>
+                            <option value="Thiago">Barbeiro Thiago</option>
+                            <option value="Erick">Barbeiro Erick</option>
+                            <option value="Jhonny">Barbeiro Jhonny</option>
+                            <option value="Rafael">Barbeiro Rafael</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-lg-7">
+                <h3 class="mb-4">3. Data e Hora</h3>
+                <div class="calendar-wrapper">
+                    <div class="calendar-header">
+                        <i class="bi bi-chevron-left"></i> <span>Dezembro 2025</span> <i class="bi bi-chevron-right"></i>
+                    </div>
+                    <div class="calendar-grid mb-2">
+                        <div class="weekday">DOM</div><div class="weekday">SEG</div><div class="weekday">TER</div><div class="weekday">QUA</div><div class="weekday">QUI</div><div class="weekday">SEX</div><div class="weekday">SÁB</div>
+                    </div>
+                    <div class="calendar-grid" id="daysGrid">
+                        <div class="day disabled">29</div><div class="day disabled">30</div>
+                        <div class="day">1</div><div class="day">2</div><div class="day">3</div><div class="day">4</div><div class="day">5</div><div class="day">6</div><div class="day">7</div>
+                        <div class="day">8</div><div class="day">9</div><div class="day active">10</div><div class="day">11</div><div class="day">12</div><div class="day">13</div><div class="day">14</div>
+                        <div class="day">15</div><div class="day">16</div><div class="day">17</div><div class="day">18</div><div class="day">19</div><div class="day">20</div><div class="day">21</div>
+                        <div class="day">22</div><div class="day">23</div><div class="day">24</div><div class="day">25</div><div class="day">26</div><div class="day">27</div><div class="day">28</div>
+                    </div>
+                    <hr class="border-secondary my-4">
+                    <h5 class="text-white mb-3"><i class="bi bi-clock"></i> Horários Disponíveis</h5>
+                    <div class="time-slots" id="timeSlots">
+                        <div class="time-btn">09:00</div><div class="time-btn">10:00</div><div class="time-btn">11:00</div>
+                        <div class="time-btn active">13:00</div><div class="time-btn">14:00</div><div class="time-btn">15:30</div>
+                        <div class="time-btn">16:00</div><div class="time-btn">18:00</div><div class="time-btn">19:00</div>
+                    </div>
+                </div>
+
+                <button class="btn-confirmar">Confirmar Agendamento</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalSucesso" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: #1a1a1a; border: 1px solid #D4CDC1;">
+                <div class="modal-body text-center p-5">
+                    <div class="mb-4"><i class="bi bi-check-circle-fill" style="font-size: 4rem; color: #D4CDC1;"></i></div>
+                    <h3 class="mb-3" style="font-family: 'Playfair Display', serif; color: #D4CDC1;">Agendamento Confirmado!</h3>
+                    <p class="text-white-50 mb-4">Seu horário foi reservado com sucesso.</p>
+                    <div class="bg-dark p-3 rounded mb-4 text-start border border-secondary">
+                        <p class="mb-1 text-white"><i class="bi bi-person me-2 text-warning"></i> <span id="modalNome">Cliente</span></p>
+                        <p class="mb-1 text-white"><i class="bi bi-calendar-event me-2 text-warning"></i> <span id="modalData">Data</span></p>
+                        <p class="mb-0 text-white"><i class="bi bi-cash-coin me-2 text-warning"></i> <span id="modalValor">R$ 0,00</span></p>
+                    </div>
+                    <button type="button" class="btn w-100" style="background-color: #D4CDC1; font-weight: bold;" onclick="location.reload()">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center py-4 border-top border-secondary mt-5">
+        <div class="container">
+            <p class="small text-secondary mb-0">&copy; 2025 Barbearia Imperium.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // --- SUAS CHAVES ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBFXGQC-uVRDvblURt1TXynXXDO554IqjI",
+            authDomain: "imperium-7d616.firebaseapp.com",
+            projectId: "imperium-7d616",
+            storageBucket: "imperium-7d616.firebasestorage.app",
+            messagingSenderId: "142571674206",
+            appId: "1:142571674206:web:f216f7984d8cdb065672cf"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Preços
+        const tabelaPrecos = {
+            "Corte de Cabelo": 50,
+            "Barba Completa": 40,
+            "Corte + Barba": 80,
+            "Camuflagem": 60,
+            "Dia do Noivo": 350
+        };
+
+        // Lógica Visual
+        const days = document.querySelectorAll('.day:not(.disabled)');
+        const times = document.querySelectorAll('.time-btn');
+        let selectedDay = '10';
+        let selectedTime = '13:00';
+
+        days.forEach(day => {
+            day.addEventListener('click', () => {
+                days.forEach(d => d.classList.remove('active'));
+                day.classList.add('active');
+                selectedDay = day.innerText;
+            });
+        });
+
+        times.forEach(time => {
+            time.addEventListener('click', () => {
+                times.forEach(t => t.classList.remove('active'));
+                time.classList.add('active');
+                selectedTime = time.innerText;
+            });
+        });
+
+        // Função de Enviar
+        window.enviarAgendamento = async function() {
+            const btn = document.querySelector('.btn-confirmar');
+            const originalText = btn.innerText;
+            
+            const nome = document.getElementById('nome').value;
+            const telefone = document.getElementById('telefone').value;
+            const unidade = document.getElementById('unidade').value;
+            const servico = document.getElementById('servico').value;
+            const profissional = document.getElementById('profissional').value;
+
+            if(!nome || !telefone) {
+                alert("Preencha nome e telefone!");
+                return;
+            }
+
+            btn.innerText = "Confirmando...";
+            btn.disabled = true;
+
+            try {
+                const dataFinal = `${selectedDay} de Dezembro de 2025 às ${selectedTime}`;
+                const dataISO = new Date(2025, 11, parseInt(selectedDay), parseInt(selectedTime.split(':')[0]), 0).toISOString();
+                
+                // Verifica duplicidade
+                const q = query(collection(db, "agendamentos"), where("dataHoraTexto", "==", dataFinal));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    alert("❌ Horário indisponível. Por favor, escolha outro.");
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    return;
+                }
+
+                const valorDoServico = tabelaPrecos[servico] || 0;
+
+                await addDoc(collection(db, "agendamentos"), {
+                    nome, telefone, unidade, servico,
+                    valor: valorDoServico,
+                    profissional,
+                    dataHoraTexto: dataFinal,
+                    dataHora: dataISO,
+                    status: "pendente",
+                    criadoEm: new Date()
+                });
+
+                // TENTA ABRIR O MODAL
+                try {
+                    // Preenche dados
+                    document.getElementById('modalNome').innerText = nome;
+                    document.getElementById('modalData').innerText = `${selectedDay}/12 às ${selectedTime}`;
+                    document.getElementById('modalValor').innerText = `R$ ${valorDoServico},00`;
+
+                    // Abre Modal
+                    const modalEl = document.getElementById('modalSucesso');
+                    if(modalEl && window.bootstrap) {
+                        const modal = new bootstrap.Modal(modalEl);
+                        modal.show();
+                    } else {
+                        // Se falhar o modal (ex: bootstrap não carregou), usa alerta
+                        throw new Error("Modal não encontrado");
+                    }
+                } catch (modalError) {
+                    console.warn("Falha ao abrir modal, usando alerta:", modalError);
+                    alert("✅ Agendamento Confirmado com Sucesso!");
+                    location.reload();
+                }
+
+            } catch (error) {
+                console.error("Erro Fatal: ", error);
+                alert("Erro de conexão. Verifique o console (F12) para detalhes.");
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        document.querySelector('.btn-confirmar').onclick = window.enviarAgendamento;
+    </script>
+
+</body>
+</html>
